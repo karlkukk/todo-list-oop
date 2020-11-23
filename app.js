@@ -1,28 +1,30 @@
 // define variables
-const form = document.querySelector("#task-form")
-const taskInput = document.querySelector("#task");
+const form = document.querySelector('#task-form');
+const taskInput = document.querySelector('#task');
 const taskList = document.querySelector('.collection');
 const clearBtn = document.querySelector('#clear-tasks');
 const filterInput = document.querySelector('#filter');
 
 // define event listeners
+// page reload event - get data from Local Storage
+document.addEventListener('DOMContentLoaded', getTasks);
 // add task to list - submit button
 form.addEventListener('submit', addTask);
-// remove task from list - fas backspace icon
+// remove task from list - fas fa-backspace icon
 taskList.addEventListener('click', removeTask);
-// clear tasks from list
+// clear tasks list
 clearBtn.addEventListener('click', clearTasks);
 // filter task from list
 filterInput.addEventListener('keyup', filterTasks);
-
 
 // addTask function
 function addTask(e) {
     if (taskInput.value === '') {
         alert("Add new task!")
     } else {
-        //create li
+        // create li
         const li = document.createElement('li');
+        // add class
         li.className = 'collection-item';
         // add input value
         li.appendChild(document.createTextNode(taskInput.value));
@@ -34,33 +36,34 @@ function addTask(e) {
         link.innerHTML = '<i class="fas fa-backspace"></i>';
         // add link into li
         li.appendChild(link);
-        // add link into ul
+        // add li into ul
         taskList.appendChild(li);
+        // store task in Local Storage
+        storeTaskInLocalStorage(taskInput.value);
         // clear task input
-        taskInput.value = "";
+        taskInput.value = '';
         e.preventDefault();
     }
 }
 
 // removeTask function
 function removeTask(e) {
+    // is click is over icon - over a tag
     if (e.target.parentElement.classList.contains('secondary-content')) {
         if (confirm("Do you want to remove this task?")) {
             e.target.parentElement.parentElement.remove();
+            storeTaskInLocalStorage();
         }
     }
 }
 
 // clearTasks function
-
 function clearTasks(e) {
-    if (confirm("Do you want to clear all tasks?")) {
-        taskList.innerHTML = "";
-    }
+    taskList.innerHTML = '';
+    localStorage.clear();
 }
 
 // filterTasks function
-
 function filterTasks(e) {
     const text = e.target.value.toLowerCase();
     document.querySelectorAll('.collection-item').forEach(
@@ -73,4 +76,27 @@ function filterTasks(e) {
             }
         }
     );
+}
+
+// storeTaskInLocalStorage function
+function storeTaskInLocalStorage(task = null) {
+    let tasks;
+    if (localStorage.getItem('tasks') === null) {
+        tasks = '';
+    } else {
+        tasks = localStorage.getItem('tasks');
+    }
+    tasks = taskList.innerHTML;
+    localStorage.setItem('tasks', tasks);
+}
+
+// get tasks from Local Storage
+function getTasks() {
+    let tasks;
+    if (localStorage.getItem('tasks') === null) {
+        tasks = '';
+    } else {
+        tasks = localStorage.getItem('tasks');
+    }
+    taskList.innerHTML = tasks;
 }
